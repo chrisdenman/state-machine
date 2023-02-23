@@ -1,11 +1,15 @@
 {
-  "name": "state-machine",
-  "version": "1.0.0",
+  "name": "@ceilingcat/state-machine",
+  "engines": {
+    "node": ">=14.17.0"
+  },
+  "type": "module",
+  "version": "1.0.1",
   "description": "State-machine implementation.",
   "main": "src/stateMachine.js",
-  "private": "true",
+  "module": "src/stateMachine.js",
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint \"src/*.js\""
   },
   "keywords": [
@@ -17,17 +21,13 @@
   },
   "license": "Unlicense",
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/eslint-parser": "^7.19.1",
-    "@babel/preset-env": "^7.20.2",
     "eslint": "^8.33.0",
     "jest": "^29.4.1",
-    "@jest/globals": "^29.4.1",
-    "babel-jest": "^29.4.1"
+    "@jest/globals": "^29.4.3"
   },
   "dependencies": {
-    "assertions": "chrisdenman/assertions#v1.0.0",
-    "collections": "chrisdenman/collections#v1.0.0"
+    "@ceilingcat/assertions": "^1.0.1",
+    "@ceilingcat/collections": "^1.0.1"
   },
   "repository": {
     "type": "git",

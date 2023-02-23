@@ -1,5 +1,5 @@
-import {hasAll, IMMUTABLE_EMPTY_SET, Pair} from "collections";
-import Assertions from "assertions";
+import {hasAll, IMMUTABLE_EMPTY_SET, Pair} from "@ceilingcat/collections";
+import Assertions from "@ceilingcat/assertions";
 
 export class StateMachine {
 

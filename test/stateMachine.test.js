@@ -1,6 +1,12 @@
 import {describe, expect, it} from '@jest/globals';
 import {StateMachine} from "../src/stateMachine";
-import {Pair, IMMUTABLE_EMPTY_MAP, IMMUTABLE_EMPTY_SET, makeImmutableMap, makeImmutableSet} from "collections";
+import {
+    Pair,
+    IMMUTABLE_EMPTY_MAP,
+    IMMUTABLE_EMPTY_SET,
+    makeImmutableMap,
+    makeImmutableSet
+} from "@ceilingcat/collections";
 
 describe(
     "State Machine Tests",
