@@ -4,7 +4,7 @@
     "node": ">=14.17.0"
   },
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "State-machine implementation.",
   "main": "src/stateMachine.js",
   "module": "src/stateMachine.js",
@@ -26,8 +26,8 @@
     "@jest/globals": "^29.4.3"
   },
   "dependencies": {
-    "@ceilingcat/assertions": "^1.0.1",
-    "@ceilingcat/collections": "^1.0.1"
+    "@ceilingcat/assertions": "^1.0.3",
+    "@ceilingcat/collections": "^1.0.3"
   },
   "repository": {
     "type": "git",

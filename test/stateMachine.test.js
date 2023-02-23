@@ -1,5 +1,5 @@
 import {describe, expect, it} from '@jest/globals';
-import {StateMachine} from "../src/stateMachine";
+import {StateMachine} from "../src/stateMachine.js";
 import {
     Pair,
     IMMUTABLE_EMPTY_MAP,
