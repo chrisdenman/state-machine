@@ -102,11 +102,11 @@ export class StateMachine {
                 Assertions.withGuard(() => key === key1 || !key.equals(key1))
             )
         })
-        this.#stateTransitionFunction = stateTransitionFunction;
+        this.#stateTransitionFunction = new Map(stateTransitionFunction.entries());
 
         Assertions.isInstanceOf(finalStates, Set);
         Assertions.isTrue(hasAll(states, finalStates))
-        this.#finalStates = finalStates;
+        this.#finalStates = new Map(finalStates.entries());
 
         this.#startTransitionFunction = Assertions.isInstanceOf(startTransitionFunction, Function);
         this.#endTransitionFunction = Assertions.isInstanceOf(endTransitionFunction, Function);

@@ -1,4 +1,4 @@
-# State-Machine 1.0.3
+# State-Machine 1.0.4
 
 JavaScript State Machine.
 

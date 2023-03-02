@@ -10,11 +10,5 @@ export default {
   errorOnDeprecated: true,
   maxWorkers: "100%",
   slowTestThreshold: 1,
-  testMatch: [
-    "**/test/**/*.js",
-  ],
-  roots: [
-    "test"
-  ],
   transform: {}
 };
