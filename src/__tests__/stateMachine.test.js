@@ -1,18 +1,18 @@
 import {describe, expect, it} from '@jest/globals';
 import {StateMachine} from "../stateMachine.js";
 import {
-    Pair,
     IMMUTABLE_EMPTY_MAP,
     IMMUTABLE_EMPTY_SET,
     makeImmutableMap,
-    makeImmutableSet
+    makeImmutableSet,
+    Pair
 } from "@ceilingcat/collections";
 
 describe(
     "State Machine Tests",
     () => {
-        const GOOD_INPUT_SYMBOL = "a"
-        const BAD_INPUT_SYMBOL = "?"
+        const GOOD_INPUT_SYMBOL = "a";
+        const BAD_INPUT_SYMBOL = "?";
         const GOOD_INPUT_ALPHABET = makeImmutableSet(new Set([GOOD_INPUT_SYMBOL]));
 
         const START_STATE = "<START>";
@@ -120,16 +120,14 @@ describe(
 
         it(
             `Construction with duplicated transition function keys generates an error`,
-            () => {
-                expect(
-                    () => new StateMachine(
-                        GOOD_INPUT_ALPHABET,
-                        STATES,
-                        INITIAL_STATE__START_STATE,
-                        DUPLICATED_KEY__EQUALS__TRANSITION_FUNCTION
-                    )
-                ).toThrowError()
-            }
+            () => expect(
+                () => new StateMachine(
+                    GOOD_INPUT_ALPHABET,
+                    STATES,
+                    INITIAL_STATE__START_STATE,
+                    DUPLICATED_KEY__EQUALS__TRANSITION_FUNCTION
+                )
+            ).toThrowError()
         );
 
         it(
@@ -169,7 +167,8 @@ describe(
                     INITIAL_STATE__START_STATE,
                     GOOD_TRANSITION_FUNCTION,
                     GOOD_FINAL_STATES,
-                    () => {},
+                    () => {
+                    },
                     0
                 )
             ).toThrowError()
@@ -186,7 +185,7 @@ describe(
                         initialState,
                         GOOD_TRANSITION_FUNCTION
                     ).initialState
-                ).toBe(initialState)
+                ).toBe(initialState);
             }
         );
 
@@ -201,7 +200,7 @@ describe(
                         initialState,
                         GOOD_TRANSITION_FUNCTION
                     ).state
-                ).toBe(initialState)
+                ).toBe(initialState);
             }
         );
 
@@ -216,11 +215,11 @@ describe(
                     GOOD_TRANSITION_FUNCTION,
                     IMMUTABLE_EMPTY_MAP
                 )).toThrowError()
-        )
+        );
 
         it(
             `That the isInFinalState is reported as false when we do not supply any final states`,
-            () => {
+            () =>
                 expect(
                     new StateMachine(
                         GOOD_INPUT_ALPHABET,
@@ -229,12 +228,11 @@ describe(
                         GOOD_TRANSITION_FUNCTION
                     ).isInFinalState
                 ).toBe(false)
-            }
         );
 
         it(
             `That the isInFinalState is reported as false when it should be`,
-            () => {
+            () =>
                 expect(
                     new StateMachine(
                         GOOD_INPUT_ALPHABET,
@@ -244,12 +242,11 @@ describe(
                         GOOD_FINAL_STATES
                     ).isInFinalState
                 ).toBe(false)
-            }
         );
 
         it(
             `That the isInFinalState is reported as false when it should be`,
-            () => {
+            () =>
                 expect(
                     new StateMachine(
                         GOOD_INPUT_ALPHABET,
@@ -259,12 +256,11 @@ describe(
                         GOOD_FINAL_STATES
                     ).isInFinalState
                 ).toBe(false)
-            }
         );
 
         it(
             `That the isInFinalState is reported as true when it should be`,
-            () => {
+            () =>
                 expect(
                     new StateMachine(
                         GOOD_INPUT_ALPHABET,
@@ -274,12 +270,11 @@ describe(
                         GOOD_FINAL_STATES
                     ).isInFinalState
                 ).toBe(true)
-            }
         );
 
         it(
             `That providing unknown input symbols generates an error`,
-            () => {
+            () =>
                 expect(
                     () => new StateMachine(
                         GOOD_INPUT_ALPHABET,
@@ -289,7 +284,6 @@ describe(
                         GOOD_FINAL_STATES
                     ).provide(BAD_INPUT_SYMBOL)
                 ).toThrowError()
-            }
         );
 
         it(
@@ -300,16 +294,37 @@ describe(
                     STATES,
                     INITIAL_STATE__START_STATE,
                     GOOD_TRANSITION_FUNCTION
-                )
-                expect(stateMachine.provide(GOOD_INPUT_SYMBOL)).toBe(stateMachine)
+                );
+                expect(stateMachine.provide(GOOD_INPUT_SYMBOL)).toBe(stateMachine);
             }
         );
+
+        it(
+            `That 'this' within: start, and end transition handlers, equals the state machine itself.`,
+            () => {
+                const stateMachine = new StateMachine(
+                    GOOD_INPUT_ALPHABET,
+                    STATES,
+                    INITIAL_STATE__START_STATE,
+                    GOOD_TRANSITION_FUNCTION,
+                    IMMUTABLE_EMPTY_SET,
+                    function () {
+                        expect(this).toBe(stateMachine);
+                    },
+                    function () {
+                        expect(this).toBe(stateMachine);
+                    }
+                );
+                stateMachine.provide(GOOD_INPUT_SYMBOL);
+            }
+        );
+
         it(
             `That providing a known input symbols returns the same state machine`,
             () => {
-                const INPUT_SYMBOL__a = "a"
-                const INPUT_SYMBOL__b = "b"
-                const INPUT_SYMBOL__c = "c"
+                const INPUT_SYMBOL__a = "a";
+                const INPUT_SYMBOL__b = "b";
+                const INPUT_SYMBOL__c = "c";
 
                 const STATE__START = "<START>";
                 const STATE__MID = "<MID>";
@@ -321,13 +336,13 @@ describe(
                     [new Pair(STATE__MID, INPUT_SYMBOL__b), STATE__MID],
                     [new Pair(STATE__MID, INPUT_SYMBOL__a), STATE__FINAL],
                     [new Pair(STATE__MID, INPUT_SYMBOL__c), STATE__START],
-                ])
+                ]);
 
                 const startTransitions = [];
-                const startStates = []
+                const startStates = [];
 
                 const endTransitions = [];
-                const endStates = []
+                const endStates = [];
 
                 const stateMachine = new StateMachine(
                     new Set([INPUT_SYMBOL__a, INPUT_SYMBOL__b, INPUT_SYMBOL__c]),
@@ -335,26 +350,24 @@ describe(
                     STATE__START,
                     TRANSITION_FUNCTION,
                     new Set([STATE__FINAL]),
-
-                    function(previousState, inputSymbol, nextState) {
-                        startTransitions.push([previousState, inputSymbol, nextState]);
+                    function (currentState, inputSymbol, nextState) {
+                        startTransitions.push([currentState, inputSymbol, nextState]);
                         startStates.push(this.state);
                     },
-                    function(previousState, inputSymbol, nextState) {
-                        endTransitions.push([previousState, inputSymbol, nextState]);
+                    function (currentState, inputSymbol, previousState) {
+                        endTransitions.push([previousState, inputSymbol, currentState]);
                         endStates.push(this.state);
                     }
-                )
+                );
 
-                stateMachine                    // start
-                    .provide(INPUT_SYMBOL__a)   // start
+                stateMachine.provide(INPUT_SYMBOL__a) // start
                     .provide(INPUT_SYMBOL__b)   // mid
                     .provide(INPUT_SYMBOL__b)   // mid
                     .provide(INPUT_SYMBOL__c)   // start
                     .provide(INPUT_SYMBOL__b)   // mid
                     .provide(INPUT_SYMBOL__a);  // final
 
-                expect(stateMachine.isInFinalState).toBe(true)
+                expect(stateMachine.isInFinalState).toBe(true);
 
                 const EXPECTED_STATE_TRANSITION_DATA = [
                     [STATE__START, INPUT_SYMBOL__a, STATE__START],
@@ -365,8 +378,8 @@ describe(
                     [STATE__MID, INPUT_SYMBOL__a, STATE__FINAL],
                 ];
 
-                expect(startTransitions).toEqual(EXPECTED_STATE_TRANSITION_DATA)
-                expect(endTransitions).toEqual(EXPECTED_STATE_TRANSITION_DATA)
+                expect(startTransitions).toEqual(EXPECTED_STATE_TRANSITION_DATA);
+                expect(endTransitions).toEqual(EXPECTED_STATE_TRANSITION_DATA);
                 expect(startStates).toEqual([
                     STATE__START, STATE__START, STATE__MID, STATE__MID, STATE__START, STATE__MID
                 ]);

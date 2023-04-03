@@ -1,10 +1,10 @@
-# State-Machine 1.0.4
+# State-Machine 2.0.0
 
 JavaScript State Machine.
 
 ## Testing
 
-`npm run test` (coverage outputs to the [coverage](coverage) folder)
+`npm run test` (see the [coverage report](./coverage/lcov-report/index.html)
 
 ## Linting
 

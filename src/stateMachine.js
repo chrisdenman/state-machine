@@ -1,6 +1,22 @@
 import {hasAll, IMMUTABLE_EMPTY_SET, Pair} from "@ceilingcat/collections";
 import Assertions from "@ceilingcat/assertions";
 
+/**
+ * @callback StartTransitionFunction
+ *
+ * @param {string} currentState - the current state
+ * @param {string} input - the input that triggered this transition
+ * @param {string} nextState - the next state
+ */
+
+/**
+ * @callback EndTransitionFunction
+ *
+ * @param {string} currentState - the current state
+ * @param {string} input - the input that triggered this transition
+ * @param {string} lastState - the last state
+ */
+
 export class StateMachine {
 
     /**
@@ -29,12 +45,12 @@ export class StateMachine {
     #stateTransitionFunction
 
     /**
-     * @type {function}
+     * @type {StartTransitionFunction}
      */
     #startTransitionFunction
 
     /**
-     * @type {function}
+     * @type {EndTransitionFunction}
      */
     #endTransitionFunction
 
@@ -46,14 +62,12 @@ export class StateMachine {
      * @param {string} initialState - the starting state
      * @param {Map<Pair<string, string>, string>} stateTransitionFunction - a <code>Map</code> from
      * <code>Pair(currentState, inputSymbol)</code> to the next state.
-     * @param {Set<string>} [finalStates] - a collection of final states such that when the state machine is in one of
+     * @param {Set<string>} finalStates - a collection of final states such that when the state machine is in one of
      * these states, <code>isInFinalState(...)</code> will return <code>true</code>
-     * @param {function} [startTransitionFunction] - a function that will be called with the arguments:
-     * (current state, input, next state) before a state transition occurs. <code>this</code> will be equal to the
-     * <code>StateMachine</code> object
-     * @param {function} [endTransitionFunction] - a function that will be called with the arguments:
-     * (last state, input, current state) after a state transition occurs. <code>this</code> will be equal to the
-     * <code>StateMachine</code> object
+     * @param {StartTransitionFunction} startTransitionFunction - a callback function that will be called before a
+     * state transition occurs (with <code>this</code> being set to the <code>StateMachine</code> object).
+     * @param {EndTransitionFunction} endTransitionFunction - a callback function that will be called after a state
+     * transition occurs (with <code>this</code> being set to the <code>StateMachine</code> object).
      *
      * @throws Error if 'inputAlphabet' is not a <code>Set</code>
      * @throws Error if 'inputAlphabet' is empty
@@ -78,8 +92,10 @@ export class StateMachine {
         initialState,
         stateTransitionFunction,
         finalStates = IMMUTABLE_EMPTY_SET,
-        startTransitionFunction = () => {},
-        endTransitionFunction = () => {}
+        startTransitionFunction = () => {
+        },
+        endTransitionFunction = () => {
+        }
     ) {
         this.#inputAlphabet = Assertions.isInstanceOf(inputAlphabet, Set)
         Assertions.isTrue(inputAlphabet.size > 0)
@@ -151,7 +167,7 @@ export class StateMachine {
      *     <li>the end transition function, if defined, is invoked with (current state, input symbol, next state)</li>
      * </ol>
      *
-     * @param inputSymbol {string} -
+     * @param inputSymbol {string} - the next symbol that may trigger a state transition
      *
      * @return {StateMachine}
      *
@@ -163,12 +179,13 @@ export class StateMachine {
 
         const _this = this;
         const stateInputPair = Pair.of(this.#state, inputSymbol);
-        this.#stateTransitionFunction.forEach((transitionState, stateAndInput) => {
+        this.#stateTransitionFunction.forEach(
+            (transitionState, stateAndInput) => {
                 if (stateAndInput.equals(stateInputPair)) {
-                    const args = [this.#state, inputSymbol, transitionState];
-                    this.#startTransitionFunction.apply(_this, args);
+                    const exitArgs = [this.#state, inputSymbol, transitionState];
+                    this.#startTransitionFunction.apply(_this, exitArgs);
                     this.#state = transitionState;
-                    this.#endTransitionFunction.apply(_this, args);
+                    this.#endTransitionFunction.apply(_this, exitArgs.reverse());
                 }
             }
         )
