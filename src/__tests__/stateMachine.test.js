@@ -45,14 +45,14 @@ describe(
         ].forEach((inputAlphabet) =>
             it(
                 `Constructing with a ${inputAlphabet} input alphabet generates an error`,
-                () => expect(() => new StateMachine(inputAlphabet)).toThrowError()
+                () => expect(() => new StateMachine(inputAlphabet)).toThrow("Input alphabet is not a Set.")
             )
         );
 
         // noinspection JSCheckFunctionSignatures
         it(
             `Constructing with an empty input alphabet generates an error`,
-            () => expect(() => new StateMachine(IMMUTABLE_EMPTY_SET)).toThrowError()
+            () => expect(() => new StateMachine(IMMUTABLE_EMPTY_SET)).toThrow("Input alphabet is empty.")
         );
 
         // noinspection JSCheckFunctionSignatures
@@ -64,7 +64,7 @@ describe(
                 `Constructing with a ${states} states set generates an error`,
                 () => expect(
                     () => new StateMachine(GOOD_INPUT_ALPHABET, states)
-                ).toThrowError()
+                ).toThrow("The 'states' argument must be a Set.")
             )
         );
 
@@ -73,7 +73,7 @@ describe(
             `Constructing with an empty states set generates an error`,
             () => expect(
                 () => new StateMachine(GOOD_INPUT_ALPHABET, IMMUTABLE_EMPTY_SET)
-            ).toThrowError()
+            ).toThrow("The 'states' argument is empty.")
         );
 
         // noinspection JSCheckFunctionSignatures
@@ -81,33 +81,33 @@ describe(
             `Constructing with a states set that does not contain the initial state generates an error`,
             () => expect(
                 () => new StateMachine(GOOD_INPUT_ALPHABET, STATES, BAD_INITIAL_STATE)
-            ).toThrowError()
+            ).toThrow(`The initial state '${BAD_INITIAL_STATE}' is unknown.`)
         );
 
         // noinspection JSCheckFunctionSignatures
         it(
             `Constructing with a state transition function that is not a Map generates an error`,
             () => expect(
-                () => new StateMachine(GOOD_INPUT_ALPHABET, STATES, BAD_INITIAL_STATE, 1)
-            ).toThrowError()
+                () => new StateMachine(GOOD_INPUT_ALPHABET, STATES, INITIAL_STATE__START_STATE, 1)
+            ).toThrow("The state transition function is not a Map.")
         );
 
         // noinspection JSCheckFunctionSignatures
         it.each`
-        inputAlphabet   | states        | initialState  | stateTransitionFunction                 
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${IMMUTABLE_EMPTY_MAP}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[0, "0"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("_", "_"), "_"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("_", "_"), "0"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("_", "a"), "_"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("_", "a"), "0"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("0", "_"), "_"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("0", "_"), "0"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("0", "a"), "_"]]}
-        ${["a"]}        | ${["0"]}      | ${"0"}      | ${[[new Pair("0", "a"), "_"]]}
+        inputAlphabet   | states        | initialState  | stateTransitionFunction           | errorMessage                 
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${IMMUTABLE_EMPTY_MAP}            | ${"The state transition function is empty."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[0, "0"]]}                     | ${"The current state and input is not a Pair."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("_", "_"), "_"]]}    | ${"The state '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("_", "_"), "0"]]}    | ${"The state '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("_", "a"), "_"]]}    | ${"The state '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("_", "a"), "0"]]}    | ${"The state '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("0", "_"), "_"]]}    | ${"The input '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("0", "_"), "0"]]}    | ${"The input '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("0", "a"), "_"]]}    | ${"The transition state '_' is unknown."}
+        ${["a"]}        | ${["0"]}      | ${"0"}        | ${[[new Pair("0", "a"), "_"]]}    | ${"The transition state '_' is unknown."}
         `(
             `Constructing with bad state transition functions generates an error`,
-            ({inputAlphabet, states, initialState, stateTransitionFunction}) =>
+            ({inputAlphabet, states, initialState, stateTransitionFunction, errorMessage}) =>
                 expect(
                     () => new StateMachine(
                         new Set(inputAlphabet),
@@ -115,7 +115,7 @@ describe(
                         initialState,
                         new Map(stateTransitionFunction)
                     )
-                ).toThrowError()
+                ).toThrow(errorMessage)
         );
 
         it(
@@ -127,7 +127,7 @@ describe(
                     INITIAL_STATE__START_STATE,
                     DUPLICATED_KEY__EQUALS__TRANSITION_FUNCTION
                 )
-            ).toThrowError()
+            ).toThrow("Non-deterministic transition function. Entries at indexes '0' and '1'.")
         );
 
         it(
@@ -140,7 +140,7 @@ describe(
                     GOOD_TRANSITION_FUNCTION,
                     BAD_FINAL_STATES
                 )
-            ).toThrowError()
+            ).toThrow(`Unknown final state '${UNKNOWN_STATE}'.`)
         );
 
         // noinspection JSCheckFunctionSignatures
@@ -154,7 +154,7 @@ describe(
                     GOOD_TRANSITION_FUNCTION,
                     GOOD_FINAL_STATES,
                     0)
-            ).toThrowError()
+            ).toThrow("The start transition function is not a function.")
         );
 
         // noinspection JSCheckFunctionSignatures
@@ -171,7 +171,7 @@ describe(
                     },
                     0
                 )
-            ).toThrowError()
+            ).toThrow("The end transition function is not a function.")
         );
 
         it(
@@ -214,7 +214,7 @@ describe(
                     INITIAL_STATE__START_STATE,
                     GOOD_TRANSITION_FUNCTION,
                     IMMUTABLE_EMPTY_MAP
-                )).toThrowError()
+                )).toThrow("The 'finalStates' argument is not a Set.")
         );
 
         it(
@@ -283,7 +283,7 @@ describe(
                         GOOD_TRANSITION_FUNCTION,
                         GOOD_FINAL_STATES
                     ).provide(BAD_INPUT_SYMBOL)
-                ).toThrowError()
+                ).toThrow(`Unknown input symbol '${BAD_INPUT_SYMBOL}' provided.`)
         );
 
         it(

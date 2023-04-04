@@ -80,8 +80,7 @@ export class StateMachine {
      * @throws Error if any 'stateTransitionFunction' <code>key.first</code> is not a known state
      * @throws Error if any 'stateTransitionFunction' <code>key.second</code> is not contained in 'inputAlphabet'
      * @throws Error if any 'stateTransitionFunction' value is not a known state
-     * @throws Error if any two 'stateTransitionFunction' keys are duplicated (either strictly equal or for which
-     * <code>key1.equals(key2) === true</code>)
+     * @throws Error if any two 'stateTransitionFunction' keys are duplicated
      * @throws Error if any 'finalStates' is not a known state
      * @throws Error if 'startTransitionFunction' is not a <code>Function</code>
      * @throws Error if 'endTransitionFunction' is not a <code>Function</code>
@@ -97,35 +96,77 @@ export class StateMachine {
         endTransitionFunction = () => {
         }
     ) {
-        this.#inputAlphabet = Assertions.isInstanceOf(inputAlphabet, Set)
-        Assertions.isTrue(inputAlphabet.size > 0)
+        this.#inputAlphabet = Assertions.isInstanceOf(inputAlphabet, Set, "Input alphabet is not a Set.");
+        Assertions.isTrue(inputAlphabet.size > 0, "Input alphabet is empty.");
 
-        Assertions.isInstanceOf(states, Set)
-        Assertions.isTrue(states.size > 0)
+        Assertions.isInstanceOf(states, Set, "The 'states' argument must be a Set.");
+        Assertions.isTrue(states.size > 0, "The 'states' argument is empty.");
 
-        Assertions.isTrue(states.has(initialState))
+        Assertions.isTrue(states.has(initialState), `The initial state '${initialState}' is unknown.`);
         this.#state = initialState;
         this.#initialState = initialState;
 
-        Assertions.isInstanceOf(stateTransitionFunction, Map);
-        Assertions.isTrue(stateTransitionFunction.size > 0)
-        stateTransitionFunction.forEach((value, key) => {
-            Assertions.isInstanceOf(key, Pair)
-            Assertions.isTrue(states.has(key.first));
-            Assertions.isTrue(inputAlphabet.has(key.second));
-            Assertions.isTrue(states.has(value));
-            stateTransitionFunction.forEach((value1, key1) =>
-                Assertions.withGuard(() => key === key1 || !key.equals(key1))
+        Assertions.isInstanceOf(
+            stateTransitionFunction,
+            Map,
+            "The state transition function is not a Map."
+        );
+
+        Assertions.isTrue(
+            stateTransitionFunction.size > 0,
+            "The state transition function is empty."
+        );
+
+        stateTransitionFunction.forEach((transitionState, currentStateAndInput) => {
+            Assertions.isInstanceOf(
+                currentStateAndInput,
+                Pair,
+                "The current state and input is not a Pair."
+            );
+            Assertions.isTrue(
+                states.has(currentStateAndInput.first),
+                `The state '${currentStateAndInput.first}' is unknown.`
+            );
+            Assertions.isTrue(
+                inputAlphabet.has(currentStateAndInput.second),
+                `The input '${currentStateAndInput.second}' is unknown.`
+            );
+            Assertions.isTrue(
+                states.has(transitionState),
+                `The transition state '${transitionState}' is unknown.`
+            );
+        });
+
+        [...stateTransitionFunction.keys()].map((currentStateAndInput0, index0) =>
+            [...stateTransitionFunction.keys()].map((currentStateAndInput1, index1) =>
+                Assertions.isTrue(
+                    !(index0 !== index1 && currentStateAndInput0.equals(currentStateAndInput1)),
+                    `Non-deterministic transition function. Entries at indexes '${index0}' and '${index1}'.`
+                )
             )
-        })
+        );
+
         this.#stateTransitionFunction = new Map(stateTransitionFunction.entries());
 
-        Assertions.isInstanceOf(finalStates, Set);
-        Assertions.isTrue(hasAll(states, finalStates))
+        Assertions.isInstanceOf(finalStates, Set, "The 'finalStates' argument is not a Set.");
+
+        finalStates.forEach(finalState =>
+            Assertions.isTrue(states.has(finalState), `Unknown final state '${finalState}'.`)
+        )
+
+        Assertions.isTrue(hasAll(states, finalStates));
         this.#finalStates = new Map(finalStates.entries());
 
-        this.#startTransitionFunction = Assertions.isInstanceOf(startTransitionFunction, Function);
-        this.#endTransitionFunction = Assertions.isInstanceOf(endTransitionFunction, Function);
+        this.#startTransitionFunction = Assertions.isInstanceOf(
+            startTransitionFunction,
+            Function,
+            "The start transition function is not a function."
+        );
+        this.#endTransitionFunction = Assertions.isInstanceOf(
+            endTransitionFunction,
+            Function,
+            "The end transition function is not a function."
+        );
     }
 
     /**
@@ -145,7 +186,6 @@ export class StateMachine {
     get state() {
         return this.#state;
     }
-
 
     /**
      * Is the current state a final state?
@@ -175,7 +215,10 @@ export class StateMachine {
      * provided to the constructor)
      */
     provide(inputSymbol) {
-        Assertions.isTrue(this.#inputAlphabet.has(inputSymbol))
+        Assertions.isTrue(
+            this.#inputAlphabet.has(inputSymbol),
+            `Unknown input symbol '${inputSymbol}' provided.`
+        );
 
         const _this = this;
         const stateInputPair = Pair.of(this.#state, inputSymbol);
@@ -188,7 +231,7 @@ export class StateMachine {
                     this.#endTransitionFunction.apply(_this, exitArgs.reverse());
                 }
             }
-        )
+        );
 
         return this;
     }

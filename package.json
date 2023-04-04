@@ -4,7 +4,7 @@
     "node": ">=14.17.0"
   },
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "State-machine implementation.",
   "main": "src/stateMachine.js",
   "module": "src/stateMachine.js",

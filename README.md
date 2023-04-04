@@ -1,4 +1,4 @@
-# State-Machine 2.0.0
+# [State-Machine 2.1.0](https://github.com/chrisdenman/state-machine.git)
 
 JavaScript State Machine.
 
